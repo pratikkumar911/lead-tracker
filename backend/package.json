@@ -1,0 +1,41 @@
+{
+    "name": "lead-tracker-backend",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Express + MongoDB API for the Lead Tracker application",
+    "main": "dist/server.js",
+    "engines": {
+        "node": ">=18"
+    },
+    "scripts": {
+        "dev": "tsx watch src/server.ts",
+        "build": "tsc -p tsconfig.json",
+        "start": "node dist/server.js",
+        "test": "jest --runInBand",
+        "test:coverage": "jest --runInBand --coverage",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.5",
+        "express": "^4.19.2",
+        "helmet": "^7.1.0",
+        "mongoose": "^8.5.1",
+        "morgan": "^1.10.0",
+        "zod": "^3.23.8"
+    },
+    "devDependencies": {
+        "@types/cors": "^2.8.17",
+        "@types/express": "^4.17.21",
+        "@types/jest": "^29.5.12",
+        "@types/morgan": "^1.9.9",
+        "@types/node": "^20.14.10",
+        "@types/supertest": "^6.0.2",
+        "jest": "^29.7.0",
+        "mongodb-memory-server": "^10.0.0",
+        "supertest": "^7.0.0",
+        "ts-jest": "^29.2.2",
+        "tsx": "^4.16.2",
+        "typescript": "^5.5.3"
+    }
+}
