@@ -3,7 +3,8 @@
     "target": "ES2022",
     "module": "commonjs",
     "moduleResolution": "node",
-    "ignoreDeprecations": "6.0",
+    "ignoreDeprecations": "5.0",
+    "rootDir": "src",
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -11,5 +12,5 @@
     "types": ["node", "jest"],
     "outDir": "dist"
   },
-  "include": ["src/**/*.ts", "tests/**/*.ts"]
+  "include": ["src/**/*.ts", "src/server.js"]
 }
