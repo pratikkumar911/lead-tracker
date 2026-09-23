@@ -1,4 +1,4 @@
-import { Router, type Request, type Response, type NextFunction, type RequestHandler } from 'express';
+import { Router, type Request, type Response, type NextFunction } from 'express';
 import { z } from 'zod';
 import { Lead, LEAD_STATUSES } from './Lead';
 
@@ -8,12 +8,6 @@ export class AppError extends Error {
     super(message);
   }
 }
-
-/** Forwards async rejections to the Express error middleware. */
-const wrap =
-  (fn: (req: Request, res: Response) => Promise<unknown>): RequestHandler =>
-  (req, res, next) =>
-    fn(req, res).catch(next);
 
 /** Escapes user input before using it in a RegExp. */
 const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -60,22 +54,22 @@ const idSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid lead id');
 export const leadsRouter = Router();
 
 // GET /leads/stats — must be registered before /:id
-leadsRouter.get(
-  '/stats',
-  wrap(async (_req, res) => {
+leadsRouter.get('/stats', async (_req, res, next) => {
+  try {
     const grouped = await Lead.aggregate<{ _id: string; count: number }>([
       { $group: { _id: '$status', count: { $sum: 1 } } },
     ]);
     const byStatus = Object.fromEntries(grouped.map((r) => [r._id, r.count]));
     const total = grouped.reduce((sum, r) => sum + r.count, 0);
     res.json({ success: true, data: { total, byStatus } });
-  }),
-);
+  } catch (error) {
+    next(error);
+  }
+});
 
 // GET /leads
-leadsRouter.get(
-  '/',
-  wrap(async (req, res) => {
+leadsRouter.get('/', async (req, res, next) => {
+  try {
     const { search, status, page, limit } = querySchema.parse(req.query);
     const sort = sortSchema.parse(req.query.sort);
 
@@ -99,13 +93,14 @@ leadsRouter.get(
       data: items,
       meta: { total, page, limit, totalPages: Math.max(1, Math.ceil(total / limit)) },
     });
-  }),
-);
+  } catch (error) {
+    next(error);
+  }
+});
 
 // POST /leads
-leadsRouter.post(
-  '/',
-  wrap(async (req, res) => {
+leadsRouter.post('/', async (req, res, next) => {
+  try {
     const payload = createSchema.parse(req.body);
 
     if (await Lead.exists({ email: payload.email })) {
@@ -114,24 +109,26 @@ leadsRouter.post(
 
     const lead = await Lead.create(payload);
     res.status(201).json({ success: true, data: lead });
-  }),
-);
+  } catch (error) {
+    next(error);
+  }
+});
 
 // GET /leads/:id
-leadsRouter.get(
-  '/:id',
-  wrap(async (req, res) => {
+leadsRouter.get('/:id', async (req, res, next) => {
+  try {
     const id = idSchema.parse(req.params.id);
     const lead = await Lead.findById(id);
     if (!lead) throw new AppError(404, 'Lead not found');
     res.json({ success: true, data: lead });
-  }),
-);
+  } catch (error) {
+    next(error);
+  }
+});
 
 // PATCH /leads/:id
-leadsRouter.patch(
-  '/:id',
-  wrap(async (req, res) => {
+leadsRouter.patch('/:id', async (req, res, next) => {
+  try {
     const id = idSchema.parse(req.params.id);
     const payload = updateSchema.parse(req.body);
 
@@ -145,32 +142,36 @@ leadsRouter.patch(
     });
     if (!lead) throw new AppError(404, 'Lead not found');
     res.json({ success: true, data: lead });
-  }),
-);
+  } catch (error) {
+    next(error);
+  }
+});
 
 // PATCH /leads/:id/status
-leadsRouter.patch(
-  '/:id/status',
-  wrap(async (req, res) => {
+leadsRouter.patch('/:id/status', async (req, res, next) => {
+  try {
     const id = idSchema.parse(req.params.id);
     const { status } = statusSchema.parse(req.body);
 
     const lead = await Lead.findByIdAndUpdate(id, { status }, { new: true });
     if (!lead) throw new AppError(404, 'Lead not found');
     res.json({ success: true, data: lead });
-  }),
-);
+  } catch (error) {
+    next(error);
+  }
+});
 
 // DELETE /leads/:id
-leadsRouter.delete(
-  '/:id',
-  wrap(async (req, res) => {
+leadsRouter.delete('/:id', async (req, res, next) => {
+  try {
     const id = idSchema.parse(req.params.id);
     const lead = await Lead.findByIdAndDelete(id);
     if (!lead) throw new AppError(404, 'Lead not found');
     res.json({ success: true, message: 'Lead deleted' });
-  }),
-);
+  } catch (error) {
+    next(error);
+  }
+});
 
 // --- Error handler ---------------------------------------------------------
 
