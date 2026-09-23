@@ -11,10 +11,7 @@ const DNS_SERVERS = (process.env.DNS_SERVERS ?? '')
   .split(',')
   .map((server) => server.trim())
   .filter(Boolean);
-const CORS_ORIGINS = [
-  process.env.CLIENT_URL,
-  process.env.CORS_ORIGIN,
-]
+const CORS_ORIGINS = [ process.env.CLIENT_URL]
   .filter((origins): origins is string => Boolean(origins))
   .flatMap((origins) => origins.split(','))
   .map((origin) => origin.trim())

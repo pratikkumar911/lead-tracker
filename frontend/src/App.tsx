@@ -122,6 +122,7 @@ export default function App() {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Lead | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [mutationLoading, setMutationLoading] = useState(false);
   const [toast, setToast] = useState<Toast | null>(null);
   const [stats, setStats] = useState<LeadStats | null>(null);
   const { leads, meta, loading, error, refresh } = useLeads({
@@ -175,19 +176,25 @@ export default function App() {
     setEditing(null);
   };
   const handleSubmit = async (values: LeadInput) => {
-    if (editing) {
-      await updateLead(editing.id, values);
-      notify("success", "Lead updated successfully");
-    } else {
-      await createLead(values);
-      notify("success", "Lead created successfully");
-      setPage(1);
+    setMutationLoading(true);
+    try {
+      if (editing) {
+        await updateLead(editing.id, values);
+        notify("success", "Lead updated successfully");
+      } else {
+        await createLead(values);
+        notify("success", "Lead created successfully");
+        setPage(1);
+      }
+      closeForm();
+      reload();
+    } finally {
+      setMutationLoading(false);
     }
-    closeForm();
-    reload();
   };
   const handleStatusChange = async (lead: Lead, nextStatus: LeadStatus) => {
     setBusyId(lead.id);
+    setMutationLoading(true);
     try {
       await updateLeadStatus(lead.id, nextStatus);
       notify("success", `${lead.name} moved to ${nextStatus}`);
@@ -199,11 +206,13 @@ export default function App() {
       );
     } finally {
       setBusyId(null);
+      setMutationLoading(false);
     }
   };
   const handleDelete = async (lead: Lead) => {
     if (!window.confirm(`Delete ${lead.name}? This cannot be undone.`)) return;
     setBusyId(lead.id);
+    setMutationLoading(true);
     try {
       await deleteLead(lead.id);
       notify("success", "Lead deleted");
@@ -215,10 +224,19 @@ export default function App() {
       );
     } finally {
       setBusyId(null);
+      setMutationLoading(false);
     }
   };
   return (
     <div className="app">
+      {mutationLoading && (
+        <div className="loading-overlay" role="status" aria-live="polite">
+          <div className="loading-overlay__panel">
+            <span className="spinner" aria-hidden="true" />
+            <span>Saving changes...</span>
+          </div>
+        </div>
+      )}
       <header className="topbar">
         <div>
           <h1>Lead Tracker</h1>
