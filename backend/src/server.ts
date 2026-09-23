@@ -3,7 +3,6 @@ import dns from 'node:dns';
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import morgan from 'morgan';
 import { leadsRouter, errorHandler } from './routes';
 
 const app = express();
@@ -30,10 +29,6 @@ app.use(
   }),
 );
 app.use(express.json({ limit: '100kb' }));
-
-if (process.env.NODE_ENV !== 'test') {
-  app.use(morgan('dev'));
-}
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', uptime: process.uptime() });
