@@ -34,7 +34,7 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok', uptime: process.uptime() });
 });
 
-app.use('/api/leads', leadsRouter);
+app.use('/leads', leadsRouter);
 app.use(errorHandler);
 
 async function connectDatabase() {

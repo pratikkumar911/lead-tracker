@@ -104,24 +104,24 @@ export function fetchLeads(query: LeadQuery = {}): Promise<LeadListResponse> {
       params.set(key, String(value));
   });
   const qs = params.toString();
-  return request<LeadListResponse>(`/api/leads${qs ? `?${qs}` : ""}`);
+  return request<LeadListResponse>(`/leads${qs ? `?${qs}` : ""}`);
 }
 export function fetchLeadStats(): Promise<{
   success: boolean;
   data: LeadStats;
 }> {
-  return request("/api/leads/stats");
+  return request("/leads/stats");
 }
 export function createLead(
   input: LeadInput,
 ): Promise<{ success: boolean; data: Lead }> {
-  return request("/api/leads", { method: "POST", body: JSON.stringify(input) });
+  return request("/leads", { method: "POST", body: JSON.stringify(input) });
 }
 export function updateLead(
   id: string,
   input: Partial<LeadInput>,
 ): Promise<{ success: boolean; data: Lead }> {
-  return request(`/api/leads/${id}`, {
+  return request(`/leads/${id}`, {
     method: "PATCH",
     body: JSON.stringify(input),
   });
@@ -130,11 +130,11 @@ export function updateLeadStatus(
   id: string,
   status: LeadStatus,
 ): Promise<{ success: boolean; data: Lead }> {
-  return request(`/api/leads/${id}/status`, {
+  return request(`/leads/${id}/status`, {
     method: "PATCH",
     body: JSON.stringify({ status }),
   });
 }
 export function deleteLead(id: string): Promise<{ success: boolean }> {
-  return request(`/api/leads/${id}`, { method: "DELETE" });
+  return request(`/leads/${id}`, { method: "DELETE" });
 }

@@ -59,7 +59,7 @@ const idSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid lead id');
 
 export const leadsRouter = Router();
 
-// GET /api/leads/stats — must be registered before /:id
+// GET /leads/stats — must be registered before /:id
 leadsRouter.get(
   '/stats',
   wrap(async (_req, res) => {
@@ -72,7 +72,7 @@ leadsRouter.get(
   }),
 );
 
-// GET /api/leads
+// GET /leads
 leadsRouter.get(
   '/',
   wrap(async (req, res) => {
@@ -102,7 +102,7 @@ leadsRouter.get(
   }),
 );
 
-// POST /api/leads
+// POST /leads
 leadsRouter.post(
   '/',
   wrap(async (req, res) => {
@@ -117,7 +117,7 @@ leadsRouter.post(
   }),
 );
 
-// GET /api/leads/:id
+// GET /leads/:id
 leadsRouter.get(
   '/:id',
   wrap(async (req, res) => {
@@ -128,7 +128,7 @@ leadsRouter.get(
   }),
 );
 
-// PATCH /api/leads/:id
+// PATCH /leads/:id
 leadsRouter.patch(
   '/:id',
   wrap(async (req, res) => {
@@ -148,7 +148,7 @@ leadsRouter.patch(
   }),
 );
 
-// PATCH /api/leads/:id/status
+// PATCH /leads/:id/status
 leadsRouter.patch(
   '/:id/status',
   wrap(async (req, res) => {
@@ -161,7 +161,7 @@ leadsRouter.patch(
   }),
 );
 
-// DELETE /api/leads/:id
+// DELETE /leads/:id
 leadsRouter.delete(
   '/:id',
   wrap(async (req, res) => {
